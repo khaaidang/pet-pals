@@ -22,31 +22,11 @@ const conn = await pool.getConnection();
 
 // Default Route
 app.get('/', (req, res) => {
-   res.send('Hello Express app!')
+   res.render('index')
 });
 
-// API Routes
-app.get('/dogs', async(req, res) => {
+// Local API Routes
 
-    let rottweilerUrl = `https://dog.ceo/api/breed/rottweiler/images`;
-    let rottweilerResponse = await fetch(rottweilerUrl);
-    let rottweilerData = await rottweilerResponse.json();
-
-    let akitaUrl = `https://dog.ceo/api/breed/akita/images`;
-    let akitaResponse = await fetch(akitaUrl);
-    let akitaData = await akitaResponse.json();
-
-    let germanUrl = `https://dog.ceo/api/breed/germanshepherd/images`;
-    let germanResponse = await fetch(germanUrl);
-    let germanData = await germanResponse.json();
-
-    res.render("dogs", {
-        rottweiler: rottweilerData.message[45],
-        akita: akitaData.message[2],
-        german: germanData.message[1]
-    });
-
-});
 
 app.get("/dbTest", async(req, res) => {
     let sql = "SELECT CURDATE()";

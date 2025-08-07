@@ -1,3 +1,35 @@
+body {
+    background-color: #FFFEFC;
+    color: #8F8073;
+}
+
+h1 {
+    color: #AFA9A2;
+}
+
+.info-card {
+    background-color: #ffffff;
+    transition: transform 0.3s ease
+}
+.info-card:hover {
+    transform:scale(1.05);
+}
+
+.btn-mochi {
+    background-color: #fbede9;
+    color: #8F8073;
+    transition: transform 0.2s ease-in-out;
+}
+
+.btn-mochi:hover {
+    background-color: #F5E3DC;
+    color: #8F8073;
+    transform: scale(1.05);
+}
+
+.card {
+    background: #FFFDF8;
+}
 .fixed-size {
     width: 200px;
     height: 200px;
