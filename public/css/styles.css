@@ -1,11 +1,25 @@
 body {
     background-color: #FFFCF9;
     color: #8F8073;
+    font-family: 'Montserrat', sans-serif;
 }
 
 h1 {
     color: #AFA9A2;
+    font-family: "Playfair Display", serif;
+    font-optical-sizing: auto;
+    font-weight: 900;
+    font-style: normal;
 }
+
+h2, h3, h4, h5 {
+    color: #AFA9A2;
+    font-family: "Playfair Display", serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+}
+
 
 .info-card {
     background-color: #ffffff;
