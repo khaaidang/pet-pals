@@ -1,0 +1,36 @@
+<%- include("partials/header.ejs") %>
+
+    <div class="py-4 d-flex justify-content-between align-items-center">
+        <h1> Pet Pals </h1>
+        <a href="/login" class="btn-lg btn btn-mochi rounded-pill"> <span class="bi bi-person-hearts"></span> Account </a>
+    </div>
+
+
+    <div class="pt-4 d-flex justify-content-center">
+        <h2> Register </h2>
+    </div>
+
+    <div class="mt-5 d-flex justify-content-center text-center">
+        <form action="/register" method="POST">
+
+            Username:
+            <input type="text" class="form-control" name="username">
+
+            First Name:
+            <input type="text" class="form-control" name="firstName">
+
+            Last Name:
+            <input type="text" class="form-control" name="lastName">
+
+            Email:
+            <input type="text" class="form-control" name="email">
+            
+            Password:
+            <input type="password" class="form-control" name="password">
+
+            <button id="registerBtn" class="mt-4 btn-lg btn btn-mochi rounded-pill"><span class="bi bi-stars"></span> Sign Up </button>
+
+        </form>
+    </div>
+
+<%- include("partials/footer.ejs") %>

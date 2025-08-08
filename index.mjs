@@ -75,6 +75,30 @@ app.post('/login', async(req, res) => {
     }
 });
 
+app.get('/register', async(req, res) => {
+    res.render("register");
+});
+
+app.post('/register', async (req, res) => {
+    let username = req.body.username;
+    let firstName = req.body.firstName;
+    let lastName = req.body.lastName;
+    let email = req.body.email;
+    let password = req.body.password;
+    let passwordHash = await bcrypt.hash(password, 10);
+    let admin = 0;
+
+    let sql = `INSERT INTO users
+               (username, first_name, last_name, email, password, admin)
+               VALUES (?, ?, ?, ?, ?, ?)`;
+    let params = [username, firstName, lastName, email, passwordHash, admin];
+    const[rows] = await conn.query(sql, params);
+    
+    req.session.authenticated = true;
+    req.session.admin = admin; // Stores whether or not this user is an admin in session
+    res.render("main", { username });
+});
+
 // In My Profile, Users will be able to see the adoption requests they've submitted which will access our local API to the request table
 app.get('/myProfile', isAuthenticated, (req, res) => {
     res.render("myProfile");
@@ -88,8 +112,37 @@ app.get('/logout', isAuthenticated, (req, res) => {
     req.session.destroy();
     res.redirect("/");
 });
+
+app.get('/pets', async(req, res) => {
+    res.render("pets");
+});
+
+app.get('/pets/:id', async(req, res) => {
+    res.render("pets");
+});
+
+
 // Local API Routes
 
+// Route to get all pets
+app.get('/api/pets', async(req, res) => {
+    let sql = `SELECT *
+               FROM pets`;
+    const [rows] = await conn.query(sql);
+    res.send(rows);
+});
+
+// Route to get one pet by ID
+app.get('/api/pets/:id', async(req, res) => {
+    let petId = req.params.id;
+
+    let sql = `SELECT *
+               FROM pets
+               WHERE id = ?`;
+    let param = [petId];
+    const [rows] = await conn.query(sql, param);
+    res.send(rows[0]);
+});
 
 app.get("/dbTest", async(req, res) => {
     let sql = "SELECT CURDATE()";
