@@ -1,0 +1,28 @@
+<%- include("partials/header.ejs") %>
+
+    <div class="py-4 d-flex justify-content-between align-items-center">
+        <h1> Pet Pals </h1>
+        <a href="/login" class="btn-lg btn btn-mochi rounded-pill"> <span class="bi bi-person-hearts"></span> Account </a>
+    </div>
+
+
+    <div class="pt-4 d-flex justify-content-center">
+        <h2> Login </h2>
+    </div>
+
+    <!-- Admin Account is: Admin Admin Password Is: adminCST336 -->
+    <div class="mt-5 d-flex justify-content-center text-center">
+        <form action="/login" method="POST">
+            Username:
+            <input type="text" class="form-control" name="username">
+            Password:
+            <input type="password" class="form-control" name="password">
+
+            <button id="loginBtn" class="mt-4 btn-lg btn btn-mochi rounded-pill"><span class="bi bi-stars"></span> Login </button>
+
+            <h5 class="mt-5">Don't have an account?</h5>
+            <a href="/register" class="btn btn-mochi rounded-pill"> <span class="bi bi-person-hearts"></span> Register </a>
+        </form>
+    </div>
+
+<%- include("partials/footer.ejs") %>

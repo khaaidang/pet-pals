@@ -1,5 +1,7 @@
 import express from 'express';
 import mysql from 'mysql2/promise';
+import bcrypt from 'bcrypt';
+import session from 'express-session';
 
 const app = express();
 
@@ -8,6 +10,14 @@ app.use(express.static('public'));
 
 //for Express to get values using POST method
 app.use(express.urlencoded({extended:true}));
+
+// Setting up Express Session
+app.set('trust proxy', 1);
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true
+}))
 
 //setting up database connection pool
 const pool = mysql.createPool({
@@ -20,11 +30,64 @@ const pool = mysql.createPool({
 });
 const conn = await pool.getConnection();
 
+
+// Functions
+function isAuthenticated(req,res,next) {
+    if (!req.session.authenticated) {
+        res.redirect("/");
+    }
+    else {
+        next();
+    }
+}
+
 // Default Route
 app.get('/', (req, res) => {
-   res.render('index')
+   res.render('index');
 });
 
+app.get('/login', async (req, res) => {
+    res.render("login");
+})
+
+app.post('/login', async(req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+
+    let passwordHash = "";
+
+    let sql = `SELECT *
+               FROM users
+               WHERE username = ?`;
+    const[rows] = await conn.query(sql, [username]);
+
+    if (rows.length > 0) {
+        passwordHash = rows[0].password;
+    }
+    let match = await bcrypt.compare(password, passwordHash);
+
+    if (match) {
+        req.session.authenticated = true;
+        res.render("main", { username });
+    }
+    else {
+        res.render("login", {"error": "Invalid username or password."});
+    }
+});
+
+// In My Profile, Users will be able to see the adoption requests they've submitted which will access our local API to the request table
+app.get('/myProfile', isAuthenticated, (req, res) => {
+    res.render("myProfile");
+});
+
+app.get('/main', isAuthenticated, async (req, res) => {
+    res.render("main");
+});
+
+app.get('/logout', isAuthenticated, (req, res) => {
+    req.session.destroy();
+    res.redirect("/");
+});
 // Local API Routes
 
 
