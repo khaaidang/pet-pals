@@ -19,6 +19,11 @@ app.use(session({
     saveUninitialized: true
 }))
 
+// Middleware to set username in res.locals for use in templates
+app.use((req, res, next) => {
+    res.locals.username = req.session?.username || null;
+    next();
+});
 //setting up database connection pool
 const pool = mysql.createPool({
     host: "khaaidang.tech",
@@ -113,9 +118,43 @@ app.get('/logout', isAuthenticated, (req, res) => {
     res.redirect("/");
 });
 
-app.get('/pets', async(req, res) => {
-    res.render("pets");
+// /pets page (SSR)
+app.get('/pets', async (req, res) => {
+  const page  = Math.max(parseInt(req.query.page || '1', 10), 1);
+  const limit = 10; // 10 pets per page
+  const offset = (page - 1) * limit;
+
+  try {
+    const [[{ total }]] = await conn.query('SELECT COUNT(*) AS total FROM pets');
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    const [pets] = await conn.query(
+      `SELECT pet_id, name, species, age, photo
+       FROM pets
+       ORDER BY pet_id
+       LIMIT ? OFFSET ?`,
+      [limit, offset]
+    );
+
+    return res.status(200).render('pets', {
+      pets,
+      page,
+      totalPages,
+      error: null
+    });
+  } catch (err) {
+    console.error('Failed to load pets:', err); // keep this log for debugging
+
+    // Graceful fallback: show message on the page
+    return res.status(200).render('pets', {
+      pets: [],
+      page: 1,
+      totalPages: 1,
+      error: 'db' // any truthy value works
+    });
+  }
 });
+
+
 
 app.get('/pets/:id', async(req, res) => {
     res.render("pets");
@@ -132,16 +171,17 @@ app.get('/api/pets', async(req, res) => {
     res.send(rows);
 });
 
-// Route to get one pet by ID
-app.get('/api/pets/:id', async(req, res) => {
-    let petId = req.params.id;
-
-    let sql = `SELECT *
-               FROM pets
-               WHERE id = ?`;
-    let param = [petId];
-    const [rows] = await conn.query(sql, param);
-    res.send(rows[0]);
+// GET /api/pets/:id
+app.get('/api/pets/:id', async (req, res) => {
+  const petId = req.params.id;
+  const [rows] = await conn.query(
+    `SELECT pet_id, name, species, age, gender, description, photo
+     FROM pets
+     WHERE pet_id = ?`,
+    [petId]
+  );
+  if (!rows[0]) return res.sendStatus(404);
+  res.json(rows[0]);
 });
 
 app.get("/dbTest", async(req, res) => {
