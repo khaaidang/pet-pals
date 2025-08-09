@@ -49,3 +49,85 @@ h2, h3, h4, h5 {
     height: 200px;
     object-fit: cover;
 }
+
+/*************************************************************    Start Of      *************************************************************\
+/************************************************************* Pets page styles *************************************************************\
+
+/* Pets grid & cards */
+.pets-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+.pet-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #fff;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.pet-card:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+
+.pet-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.pet-card-body { padding: 10px; }
+.muted { color:#6b7280; font-size: 0.9rem; }
+
+/* Pagination */
+.pagination {
+  margin: 20px 0;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pagination a,
+.pagination span {
+  padding: 6px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  text-decoration: none;
+}
+.pagination .active {
+  background: #111827;
+  color: #fff;
+  border-color: #111827;
+}
+
+/* Fixed 700×400 frame, centers image, never distorts */
+.photo-box {
+  width: 400px;
+  aspect-ratio: 7 / 4;        
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;             
+  background: #f3f4f6;         
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.photo-box img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;         
+}
+
+
+/* Responsiveness */
+@media (max-width: 1200px) { .pets-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 992px)  { .pets-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 768px)  { .pets-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px)  { .pets-grid { grid-template-columns: 1fr; } }
+
+@media (min-width: 760px) {
+  .photo-box { width: 100%; }
+}
+/*************************************************************      End Of      *************************************************************\
+/************************************************************* Pets page styles *************************************************************\

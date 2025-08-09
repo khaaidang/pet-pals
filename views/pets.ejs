@@ -1,4 +1,90 @@
 <%- include("partials/header.ejs") %>
+<h1>Pets</h1>
+<% if (error || pets.length === 0) { %>
+  <div class="text-center py-5">
+    <i class="bi bi-emoji-frown fs-1 d-block mb-3"></i>
+    <h2 class="h4 mb-2">No pets available for adoption at the time.</h2>
+    <p class="text-muted mb-0">Please check back later.</p>
+  </div>
+<% } else { %>
+<div class="pets-grid">
+  <% pets.forEach(pet => { %>
+    <div class="pet-card js-pet-card" data-id="<%= pet.pet_id %>">
+      <img src="<%= pet.photo %>" alt="<%= pet.name %>" onerror="this.src='https://placehold.co/600x400?text=No+Photo'"/>
+      <div class="pet-card-body">
+        <div><strong><%= pet.name %></strong></div>
+        <div class="muted"><%= pet.species %> • <%= pet.age %> yrs</div>
+      </div>
+    </div>
+  <% }) %>
+</div>
 
+<div class="pagination">
+  <% if (page > 1) { %>
+    <a href="/pets?page=<%= page - 1 %>">Prev</a>
+  <% } %>
+  <% for (let p = 1; p <= totalPages; p++) { %>
+    <% if (p === page) { %>
+      <span class="active"><%= p %></span>
+    <% } else { %>
+      <a href="/pets?page=<%= p %>"><%= p %></a>
+    <% } %>
+  <% } %>
+  <% if (page < totalPages) { %>
+    <a href="/pets?page=<%= page + 1 %>">Next</a>
+  <% } %>
+</div>
+<% } %>
+<!-- Bootstrap modal -->
+<div class="modal fade" id="petModal" tabindex="-1" aria-labelledby="petModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="petModalTitle" style="padding-left: 35px;">Loading…</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="photo-box">
+        <img
+            id="petModalImg"
+            alt=""
+        />
+        </div>
+        <p style="padding-top:10px; padding-left: 35px; padding-right: 35px;"><strong>Species:</strong> <span id="petModalSpecies"></span></p>
+        <p style="padding-left: 35px; padding-right: 35px;"><strong>Age:</strong> <span id="petModalAge"></span></p>
+        <p style="padding-left: 35px; padding-right: 35px;"><strong>Gender:</strong> <span id="petModalGender"></span></p>
+        <p style="padding-left: 35px; padding-right: 35px;" id="petModalDesc"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // require bootstrap.bundle.js loaded in header.ejs
+  const petModal = new bootstrap.Modal('#petModal');
+
+  document.querySelectorAll('.js-pet-card').forEach(card => {
+    card.addEventListener('click', async () => {
+      try {
+        const id = card.dataset.id;
+        const res = await fetch(`/api/pets/${id}`);
+        if (!res.ok) throw new Error('Failed to load pet');
+        const pet = await res.json();
+
+        document.getElementById('petModalTitle').textContent = pet.name || 'Pet';
+        document.getElementById('petModalImg').src = pet.photo || 'https://placehold.co/800x500?text=No+Photo';
+        document.getElementById('petModalImg').alt = pet.name || 'Pet photo';
+        document.getElementById('petModalSpecies').textContent = pet.species ?? '';
+        document.getElementById('petModalAge').textContent = pet.age ?? '';
+        document.getElementById('petModalGender').textContent = pet.gender ?? '';
+        document.getElementById('petModalDesc').textContent = pet.description ?? '';
+
+        petModal.show();
+      } catch (e) {
+        alert('Could not load pet details.');
+      }
+    });
+  });
+</script>
 
 <%- include("partials/footer.ejs") %>
